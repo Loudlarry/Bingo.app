@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo</title>
+    <meta name="theme-color" content="#1f2937">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bingo">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231f2937'/><text x='50' y='50' text-anchor='middle' dominant-baseline='middle' fill='white' font-size='40' font-family='sans-serif'>📈</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: #f9fafb;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px);
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f3f4f6;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .header .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #d1d5db;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .settings-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #374151;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        
+        .settings-menu.show {
+            display: block;
+        }
+        
+        .settings-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        
+        .settings-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-container {
+            position: relative;
+        }
+        
+        .category {
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fbbf24;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .entry {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .entry:last-child {
+            margin-bottom: 0;
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .ticker {
+            font-size: 18px;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .edit-btn, .delete-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .entry-details {
+            display: grid;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-label {
+            color: #d1d5db;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #f3f4f6;
+            text-align: right;
+            flex: 1;
+            margin-left: 12px;
+        }
+        
+        .risk-low { color: #10b981; }
+        .risk-medium { color: #fbbf24; }
+        .risk-high { color: #ef4444; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #374151;
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f3f4f6;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #d1d5db;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #f3f4f6;
+            font-size: 16px;
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #f3f4f6;
+            font-size: 16px;
+        }
+        
+        .search-box::placeholder {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <div class="header">
+                <div></div>
+                <div>
+                    <h1>📈 Bingo</h1>
+                    <div class="subtitle">by Marc</div>
+                </div>
+                <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+                <div class="settings-menu" id="settingsMenu">
+                    <div class="settings-item" onclick="showPasswordModal()">+ Add Entry</div>
+                    <div class="settings-item" onclick="showPasswordModal('edit')">✏️ Edit Mode</div>
+                    <div class="settings-item" onclick="toggleSettings()">Close</div>
+                </div>
+            </div>
+        </div>
+        
+        <input type="text" class="search-box" id="searchBox" placeholder="Search tickers, categories, or notes...">
+        
+        <div id="entriesContainer"></div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">Add New Entry</h3>
+            <form id="entryForm">
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="category" required>
+                        <option value="A. Monthly — High Upside Picks">A. Monthly — High Upside Picks</option>
+                        <option value="B. Weekly — 20%+ Potential">B. Weekly — 20%+ Potential</option>
+                        <option value="C. Plan to Beat S&P 500 Safely">C. Plan to Beat S&P 500 Safely</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ticker</label>
+                    <input type="text" class="form-input" id="ticker" placeholder="e.g., AFRM" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Horizon</label>
+                    <input type="text" class="form-input" id="horizon" placeholder="e.g., 1 Month, Next Week" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Expected Move</label>
+                    <input type="text" class="form-input" id="expectedMove" placeholder="e.g., ±17.2% (implied)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Analyst Target / Notes</label>
+                    <textarea class="form-textarea" id="analystTarget" placeholder="e.g., Target ~$84 vs ~$69 now"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Risk Level</label>
+                    <select class="form-select" id="riskLevel" required>
+                        <option value="🟢 Low">🟢 Low</option>
+                        <option value="🟢 Low–Med">🟢 Low–Med</option>
+                        <option value="🟡 Medium">🟡 Medium</option>
+                        <option value="🟡/🔴 Med–High">🟡/🔴 Med–High</option>
+                        <option value="🔴 High">🔴 High</option>
+                    </select>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Enter Password</h3>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <input type="password" class="form-input" id="passwordInput" placeholder="Enter password" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="hidePasswordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let entries = [
+            {
+                id: 1,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "AFRM ⭐",
+                horizon: "1 Month",
+                expectedMove: "±17.2% (implied)",
+                analystTarget: "Target ~$84 vs ~$69 now",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 2,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "APP",
+                horizon: "1 Month",
+                expectedMove: "+14.3% post-earnings",
+                analystTarget: "Analyst targets ~$491 vs ~$463 now",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 3,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "MRNA",
+                horizon: "Through Year-End",
+                expectedMove: "—",
+                analystTarget: "30%+ upside implied",
+                riskLevel: "🟡/🔴 Med–High"
+            },
+            {
+                id: 4,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "CRM",
+                horizon: "Through Year-End",
+                expectedMove: "—",
+                analystTarget: "Large-cap growth catalyst",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 5,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "CZR",
+                horizon: "Through Year-End",
+                expectedMove: "—",
+                analystTarget: "Leisure/reopen play",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 6,
+                category: "A. Monthly — High Upside Picks",
+                ticker: "TTAN",
+                horizon: "Through Year-End",
+                expectedMove: "—",
+                analystTarget: "Value rebound optimism",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 7,
+                category: "B. Weekly — 20%+ Potential",
+                ticker: "AFRM ⭐",
+                horizon: "Next Week",
+                expectedMove: "+13.5% (implied)",
+                analystTarget: "Earnings momentum",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 8,
+                category: "B. Weekly — 20%+ Potential",
+                ticker: "APP",
+                horizon: "Next Week",
+                expectedMove: "~±17.6% potential",
+                analystTarget: "Earnings-driven volatility",
+                riskLevel: "🟡 Medium"
+            },
+            {
+                id: 9,
+                category: "C. Plan to Beat S&P 500 Safely",
+                ticker: "Strategy Mix",
+                horizon: "Long-Term (6–18 mo)",
+                expectedMove: "Goal: > S&P 500 total return",
+                analystTarget: "See strategy details below",
+                riskLevel: "🟢 Low–Med"
+            }
+        ];
+        
+        let editingId = null;
+        let filteredEntries = [...entries];
+        let editMode = false;
+        
+        // Render functions
+        function renderEntries() {
+            const container = document.getElementById('entriesContainer');
+            const groupedEntries = groupByCategory(filteredEntries);
+            
+            if (filteredEntries.length === 0) {
+                container.innerHTML = '<div class="empty-state">No entries found. Try adjusting your search or add a new entry.</div>';
+                return;
+            }
+            
+            container.innerHTML = Object.entries(groupedEntries)
+                .map(([category, entries]) => `
+                    <div class="category">
+                        <div class="category-header">
+                            ${category}
+                            <span style="font-size: 14px; color: #9ca3af;">${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}</span>
+                        </div>
+                        ${entries.map(entry => `
+                            <div class="entry">
+                                <div class="entry-header">
+                                    <div class="ticker">${entry.ticker}</div>
+                                    <div class="actions" id="actions-${entry.id}" style="display: none;">
+                                        <button class="edit-btn" onclick="editEntry(${entry.id})">Edit</button>
+                                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="entry-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Horizon:</span>
+                                        <span class="detail-value">${entry.horizon}</span>
+                                    </div>
+                                    ${entry.expectedMove ? `
+                                    <div class="detail-row">
+                                        <span class="detail-label">Expected Move:</span>
+                                        <span class="detail-value">${entry.expectedMove}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${entry.analystTarget ? `
+                                    <div class="detail-row">
+                                        <span class="detail-label">Target/Notes:</span>
+                                        <span class="detail-value">${entry.analystTarget}</span>
+                                    </div>
+                                    ` : ''}
+                                    <div class="detail-row">
+                                        <span class="detail-label">Risk:</span>
+                                        <span class="detail-value ${getRiskClass(entry.riskLevel)}">${entry.riskLevel}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('');
+        }
+        
+        function groupByCategory(entries) {
+            const grouped = {};
+            entries.forEach(entry => {
+                if (!grouped[entry.category]) {
+                    grouped[entry.category] = [];
+                }
+                grouped[entry.category].push(entry);
+            });
+            return grouped;
+        }
+        
+        function getRiskClass(riskLevel) {
+            if (riskLevel.includes('🟢')) return 'risk-low';
+            if (riskLevel.includes('🟡') && riskLevel.includes('🔴')) return 'risk-high';
+            if (riskLevel.includes('🟡')) return 'risk-medium';
+            if (riskLevel.includes('🔴')) return 'risk-high';
+            return '';
+        }
+        
+        // Modal functions
+        function toggleSettings() {
+            const menu = document.getElementById('settingsMenu');
+            menu.classList.toggle('show');
+        }
+        
+        function showPasswordModal(action = 'add') {
+            toggleSettings(); // Close settings menu
+            const modal = document.getElementById('passwordModal');
+            modal.classList.add('show');
+            modal.setAttribute('data-action', action);
+            
+            // Clear any previous password and focus
+            document.getElementById('passwordInput').value = '';
+            setTimeout(() => {
+                document.getElementById('passwordInput').focus();
+            }, 100);
+        }
+        
+        function hidePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            modal.classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+        }
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            const actionElements = document.querySelectorAll('[id^="actions-"]');
+            actionElements.forEach(el => {
+                el.style.display = editMode ? 'flex' : 'none';
+            });
+        }
+        
+        function showModal(entryId = null) {
+            const modal = document.getElementById('modal');
+            const form = document.getElementById('entryForm');
+            const title = document.getElementById('modalTitle');
+            
+            editingId = entryId;
+            
+            if (entryId) {
+                title.textContent = 'Edit Entry';
+                const entry = entries.find(e => e.id === entryId);
+                if (entry) {
+                    document.getElementById('category').value = entry.category;
+                    document.getElementById('ticker').value = entry.ticker;
+                    document.getElementById('horizon').value = entry.horizon;
+                    document.getElementById('expectedMove').value = entry.expectedMove || '';
+                    document.getElementById('analystTarget').value = entry.analystTarget || '';
+                    document.getElementById('riskLevel').value = entry.riskLevel;
+                }
+            } else {
+                title.textContent = 'Add New Entry';
+                form.reset();
+            }
+            
+            modal.classList.add('show');
+        }
+        
+        function hideModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            editingId = null;
+        }
+        
+        function editEntry(id) {
+            // This function is now only called when edit mode is active
+            showModal(id);
+        }
+        
+        function deleteEntry(id) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                entries = entries.filter(e => e.id !== id);
+                applySearch();
+                renderEntries();
+            }
+        }
+        
+        // Search functionality
+        function applySearch() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            if (!searchTerm.trim()) {
+                filteredEntries = [...entries];
+            } else {
+                filteredEntries = entries.filter(entry =>
+                    entry.ticker.toLowerCase().includes(searchTerm) ||
+                    entry.category.toLowerCase().includes(searchTerm) ||
+                    entry.analystTarget.toLowerCase().includes(searchTerm) ||
+                    entry.horizon.toLowerCase().includes(searchTerm)
+                );
+            }
+        }
+        
+        // Password form submission
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            const modal = document.getElementById('passwordModal');
+            const action = modal.getAttribute('data-action') || 'add';
+            
+            console.log('Password entered:', password); // Debug log
+            console.log('Action:', action); // Debug log
+            
+            if (password === '4321') {
+                hidePasswordModal();
+                if (action === 'edit') {
+                    toggleEditMode();
+                } else {
+                    showModal(); // Show add entry modal
+                }
+            } else {
+                alert('Incorrect password');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        });
+        
+        // Also allow Enter key in password field
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('passwordForm').dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // Form submission
+        document.getElementById('entryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                category: document.getElementById('category').value,
+                ticker: document.getElementById('ticker').value,
+                horizon: document.getElementById('horizon').value,
+                expectedMove: document.getElementById('expectedMove').value,
+                analystTarget: document.getElementById('analystTarget').value,
+                riskLevel: document.getElementById('riskLevel').value
+            };
+            
+            if (editingId) {
+                const entryIndex = entries.findIndex(e => e.id === editingId);
+                if (entryIndex !== -1) {
+                    entries[entryIndex] = { ...entries[entryIndex], ...formData };
+                }
+            } else {
+                const newId = Math.max(...entries.map(e => e.id), 0) + 1;
+                entries.push({ id: newId, ...formData });
+            }
+            
+            applySearch();
+            renderEntries();
+            hideModal();
+        });
+        
+        // Search box event listener
+        document.getElementById('searchBox').addEventListener('input', function() {
+            applySearch();
+            renderEntries();
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideModal();
+            }
+        });
+        
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hidePasswordModal();
+            }
+        });
+        
+        // Close settings menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const settingsBtn = e.target.closest('.settings-btn');
+            const settingsMenu = document.getElementById('settingsMenu');
+            
+            if (!settingsBtn && !settingsMenu.contains(e.target)) {
+                settingsMenu.classList.remove('show');
+            }
+        });
+        
+        // Prevent zoom on input focus (iOS)
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        
+        // Initial render
+        renderEntries();
+        
+        // PWA service worker registration
+        if ('serviceWorker' in navigator) {
+            const swContent = `
+                const CACHE_NAME = 'trading-tracker-v1';
+                const urlsToCache = ['/'];
+                
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                if (response) {
+                                    return response;
+                                }
+                                return fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swContent], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl)
+                .then(() => console.log('SW registered'))
+                .catch(() => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>
