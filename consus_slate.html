@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Consus Slate — Hedge Fund</title>
+  <meta name="description" content="Consus Slate is a multi-strategy hedge fund pursuing idiosyncratic alpha across global public markets.">
+  <style>
+    :root{
+      --bg:#0a0b0d; --panel:#0f1115; --panel2:#0b0d11;
+      --text:#e5e7eb; --muted:#a1a1aa; --subtle:#d4d4d8;
+      --line:#27272a; --accent:#cbd5e1; --brand:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:1140px;margin:0 auto;padding:0 24px}
+    .shadow{box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);border:1px solid var(--line);border-radius:16px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:10px;border:1px solid var(--line);padding:.7rem 1rem;font-weight:600;background:transparent;color:var(--text);cursor:pointer}
+    .btn.primary{background:var(--brand);color:#0a0b0d;border-color:transparent}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn.ghost:hover{background:#0e1014}
+    .muted{color:var(--muted)}
+    .subtle{color:#c4c4cc}
+    header.sticky{position:sticky;top:0;backdrop-filter:saturate(140%) blur(6px);background:rgba(0,0,0,.35);border-bottom:1px solid var(--line);z-index:50}
+    nav a{font-size:.92rem;color:#c0c0c8}
+    nav a:hover{color:#fff}
+    .grid{display:grid;gap:24px}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media(max-width:900px){.grid-3{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.grid-2,.grid-4{grid-template-columns:1fr}}
+    .stat{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(255,255,255,.02)}
+    .hero-bg{position:absolute;inset:0;opacity:.35;background:
+      radial-gradient(60% 40% at 80% 20%, #94a3b8 0%, transparent 60%),
+      radial-gradient(50% 40% at 10% 70%, #71717a 0%, transparent 60%);}
+    .badge-marquee{white-space:nowrap;display:flex;gap:40px;animation:marquee 22s linear infinite;color:#8e8e95}
+    @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .avatar{position:relative;height:140px;border-radius:14px;overflow:hidden;background:radial-gradient(100% 120% at 80% 0%,#27272a 0%,#0a0b0d 70%)}
+    .avatar .ring1,.avatar .ring2{position:absolute;border:1px solid #2f3136;border-radius:999px}
+    .avatar .ring1{width:140px;height:140px;right:-18px;bottom:-30px}
+    .avatar .ring2{width:100px;height:100px;left:-30px;top:-24px}
+    .avatar .init{position:absolute;inset:0;display:grid;place-items:center;font-size:28px;font-weight:700;color:#e3e3ea}
+    .footer-meta{border-top:1px solid var(--line);background:rgba(0,0,0,.25)}
+    /* focus */
+    :focus-visible{outline:2px solid #93c5fd;outline-offset:2px;border-radius:6px}
+    .skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip:focus{position:fixed;left:12px;top:12px;width:auto;height:auto;padding:10px 12px;background:#000;color:#fff;border-radius:8px;z-index:9999}
+    /* mobile menu */
+    .mobile{display:none}
+    @media(max-width:900px){.desktop{display:none}.mobile{display:block}}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5)}
+    /* cookie banner */
+    .cookie{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(720px,95vw);background:#0e1014;border:1px solid var(--line);border-radius:16px;padding:14px 16px;z-index:60}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Announcement -->
+<div class="desktop" style="background:rgba(0,0,0,.6);border-bottom:1px solid var(--line);font-size:12px;color:#a1a1aa">
+  <div class="container" style="padding:8px 24px;display:flex;gap:12px;align-items:center">
+    <span>✔ For qualified investors only.</span>
+    <span class="muted">Illustrative content • Not an offer</span>
+  </div>
+</div>
+
+<header class="sticky" role="banner">
+  <div class="container" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="height:32px;width:32px;border-radius:10px;background:linear-gradient(135deg,#fff,#9ca3af);color:#0a0b0d;font-weight:900;display:grid;place-items:center">CS</div>
+      <div style="font-family:ui-serif,Georgia,serif;font-size:20px;letter-spacing:.3px">Consus Slate</div>
+    </div>
+    <nav class="desktop" aria-label="Primary" style="display:flex;gap:28px">
+      <a href="#philosophy">Philosophy</a><a href="#strategy">Strategies</a>
+      <a href="#performance">Performance</a><a href="#insights">Insights</a>
+      <a href="#team">Team</a><a href="#contact">Contact</a>
+    </nav>
+    <div class="desktop">
+      <a href="#" class="btn primary">Investor Login</a>
+    </div>
+    <button id="openMenu" class="btn ghost mobile" aria-label="Open Menu" aria-expanded="false" aria-controls="mobileMenu">☰</button>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobileWrap" class="mobile" hidden>
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div id="mobileMenu" role="dialog" aria-modal="true" class="panel shadow" style="position:fixed;right:12px;top:12px;left:12px;border-radius:16px;padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Menu</strong>
+        <button id="closeMenu" class="btn">✕ Close</button>
+      </div>
+      <div style="display:grid;gap:10px;font-size:14px">
+        <a class="menuLink" href="#philosophy">Philosophy</a>
+        <a class="menuLink" href="#strategy">Strategies</a>
+        <a class="menuLink" href="#performance">Performance</a>
+        <a class="menuLink" href="#insights">Insights</a>
+        <a class="menuLink" href="#team">Team</a>
+        <a class="menuLink" href="#contact">Contact</a>
+        <a class="btn primary" href="#" style="justify-content:center;margin-top:8px">Investor Login</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Hero -->
+<section style="position:relative;overflow:hidden">
+  <div class="hero-bg"></div>
+  <div class="container" style="padding:90px 24px 100px">
+    <h1 style="font-family:ui-serif,Georgia,serif;font-size:clamp(34px,4.2vw,56px);line-height:1.08;margin:0">
+      Quiet Conviction. <span class="muted">Relentless Edge.</span>
+    </h1>
+    <p class="muted" style="max-width:620px;margin-top:18px">
+      Consus Slate is a multi-strategy hedge fund pursuing idiosyncratic alpha across global public markets. We combine disciplined risk control with a forensic research culture.
+    </p>
+    <div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap">
+      <a class="btn primary" href="#contact">Request Deck →</a>
+      <a class="btn ghost" href="#contact">Speak to IR</a>
+    </div>
+
+    <dl class="grid grid-4" style="margin-top:32px">
+      <div class="stat"><dt class="muted">AUM</dt><dd style="margin-top:6px;font-size:18px">$2.3B</dd></div>
+      <div class="stat"><dt class="muted">Launch</dt><dd style="margin-top:6px;font-size:18px">2016</dd></div>
+      <div class="stat"><dt class="muted">Strategies</dt><dd style="margin-top:6px;font-size:18px">L/S, Event, Macro</dd></div>
+      <div class="stat"><dt class="muted">Min.</dt><dd style="margin-top:6px;font-size:18px">$5M</dd></div>
+    </dl>
+
+    <!-- Marquee badges -->
+    <div style="overflow:hidden;margin-top:40px">
+      <div class="badge-marquee">
+        <div>Family Offices</div><div>Endowments</div><div>Pension Plans</div><div>Insurance</div><div>Fund of Funds</div><div>RIA Platforms</div>
+        <div>Family Offices</div><div>Endowments</div><div>Pension Plans</div><div>Insurance</div><div>Fund of Funds</div><div>RIA Platforms</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<section id="philosophy" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px">
+    <div class="grid grid-3">
+      <div class="card" style="padding:24px">
+        <div style="font-weight:600">Downside First</div>
+        <p class="muted" style="margin-top:8px">We size for survivability. Loss-avoidance precedes return-seeking across books and timeframes.</p>
+      </div>
+      <div class="card" style="padding:24px">
+        <div style="font-weight:600">Research Depth</div>
+        <p class="muted" style="margin-top:8px">Primary sourcing, variant perception, and catalysts mapped to crisp risk/reward distributions.</p>
+      </div>
+      <div class="card" style="padding:24px">
+        <div style="font-weight:600">Operational Rigor</div>
+        <p class="muted" style="margin-top:8px">Institutional controls, independent risk, and battle-tested infrastructure built to scale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Strategies -->
+<section id="strategy" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px">
+    <div style="display:flex;align-items:end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <h2 style="font-family:ui-serif,Georgia,serif;font-size:34px;margin:0">Strategies</h2>
+      <p class="muted" style="max-width:680px;margin:0">Multi-PM platform spanning equity long/short, event-driven special situations, and global macro overlays.</p>
+    </div>
+    <div class="grid grid-3" style="margin-top:24px">
+      <div class="panel" style="padding:20px">
+        <div style="font-weight:600">Equity Long/Short</div>
+        <ul class="muted" style="margin:10px 0 0 18px">
+          <li>Concentrated core; risk-neutral satellite</li>
+          <li>Supply chain and channel checks</li>
+          <li>Factor and crowding-aware sizing</li>
+        </ul>
+        <div class="muted" style="border-top:1px solid var(--line);margin-top:16px;padding-top:10px;font-size:12px">Illustrative overview</div>
+      </div>
+      <div class="panel" style="padding:20px">
+        <div style="font-weight:600">Event-Driven</div>
+        <ul class="muted" style="margin:10px 0 0 18px">
+          <li>Merger arb, spinoffs, recap catalysts</li>
+          <li>Legal/antitrust scenario trees</li>
+          <li>Tight stop-loss, short duration</li>
+        </ul>
+        <div class="muted" style="border-top:1px solid var(--line);margin-top:16px;padding-top:10px;font-size:12px">Illustrative overview</div>
+      </div>
+      <div class="panel" style="padding:20px">
+        <div style="font-weight:600">Global Macro</div>
+        <ul class="muted" style="margin:10px 0 0 18px">
+          <li>Rates, FX, vol surfaces for tail hedges</li>
+          <li>Discretionary + systematic blend</li>
+          <li>Correlation stress testing</li>
+        </ul>
+        <div class="muted" style="border-top:1px solid var(--line);margin-top:16px;padding-top:10px;font-size:12px">Illustrative overview</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;padding:18px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:600;margin-bottom:4px">Due Diligence Pack</div>
+        <div class="muted" style="font-size:14px">Request our fund overview, sample risk report, and ODD checklist.</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a class="btn primary" href="#contact">Request Materials</a>
+        <a class="btn" href="#insights">Read Strategy Notes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Performance -->
+<section id="performance" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px">
+    <div style="display:flex;align-items:end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <h2 style="font-family:ui-serif,Georgia,serif;font-size:34px;margin:0">Performance (Illustrative)</h2>
+      <p class="muted" style="max-width:600px;margin:0">Net returns, hypothetical for design demonstration. Past performance is not indicative of future results.</p>
+    </div>
+
+    <div class="grid" style="grid-template-columns:2fr 1fr;margin-top:24px">
+      <div class="panel" style="padding:14px">
+        <svg id="lineChart" viewBox="0 0 640 320" width="100%" height="320" role="img" aria-label="Cumulative return line chart">
+          <rect x="0" y="0" width="640" height="320" fill="url(#bgGrad)"></rect>
+          <defs>
+            <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0a0b0d"/>
+              <stop offset="100%" stop-color="#0b0d11"/>
+            </linearGradient>
+          </defs>
+          <g id="lineAxis" stroke="#3f3f46" stroke-width="1"></g>
+          <path id="linePath" d="" fill="none" stroke="#e5e7eb" stroke-width="2"></path>
+        </svg>
+      </div>
+      <div class="panel" style="padding:14px">
+        <svg id="drawdownChart" viewBox="0 0 480 320" width="100%" height="320" role="img" aria-label="Drawdown area chart">
+          <rect x="0" y="0" width="480" height="320" fill="url(#bgGrad)"></rect>
+          <g id="ddAxis" stroke="#3f3f46" stroke-width="1"></g>
+          <path id="ddArea" d="" fill="rgba(229,231,235,.18)" stroke="#e5e7eb" stroke-width="1.5"></path>
+        </svg>
+        <div class="grid grid-2" style="margin-top:10px">
+          <div class="stat"><div class="muted">Max DD</div><div style="margin-top:6px">-2.1%</div></div>
+          <div class="stat"><div class="muted">Worst Month</div><div style="margin-top:6px">-0.8%</div></div>
+          <div class="stat"><div class="muted">Best Month</div><div style="margin-top:6px">+1.0%</div></div>
+          <div class="stat"><div class="muted">% Up Months</div><div style="margin-top:6px">67%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-4" style="margin-top:18px">
+      <div class="stat"><div class="muted">Volatility</div><div style="margin-top:6px">5.8%</div></div>
+      <div class="stat"><div class="muted">Beta (S&amp;P)</div><div style="margin-top:6px">0.12</div></div>
+      <div class="stat"><div class="muted">Hit Rate</div><div style="margin-top:6px">58%</div></div>
+      <div class="stat"><div class="muted">Sharpe (net)</div><div style="margin-top:6px">1.9</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Insights -->
+<section id="insights" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px">
+    <div style="display:flex;align-items:end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <h2 style="font-family:ui-serif,Georgia,serif;font-size:34px;margin:0">Insights</h2>
+      <p class="muted" style="max-width:680px;margin:0">Select memos and letters (placeholders) to demonstrate layout and tone.</p>
+    </div>
+    <div class="grid grid-3" style="margin-top:24px">
+      <div class="card" style="padding:20px">
+        <div class="muted" style="font-size:12px">Memo</div>
+        <div style="font-weight:600;margin-top:6px">On Liquidity &amp; Crowding</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">A framework for assessing crowding risk across factors and themes.</p>
+        <a href="#contact" class="btn" style="margin-top:10px">Read Placeholder</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="muted" style="font-size:12px">Letter</div>
+        <div style="font-weight:600;margin-top:6px">Regime Shifts in Macro</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">How we map regime probability and adjust our overlays.</p>
+        <a href="#contact" class="btn" style="margin-top:10px">Read Placeholder</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="muted" style="font-size:12px">Note</div>
+        <div style="font-weight:600;margin-top:6px">Variant Perception</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Building differentiated views through primary work and catalyst mapping.</p>
+        <a href="#contact" class="btn" style="margin-top:10px">Read Placeholder</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Team -->
+<section id="team" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px">
+    <h2 style="font-family:ui-serif,Georgia,serif;font-size:34px;margin:0">Leadership</h2>
+    <p class="muted" style="margin-top:8px;max-width:700px">Experienced professionals leading Consus Slate with analytical depth and conviction.</p>
+    <div class="grid grid-3" style="margin-top:24px">
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">BS</div></div>
+        <div style="font-weight:600;margin-top:10px">Brother Shark, CEO</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Leads Consus Slate as Chief Executive Officer with 20+ years in global macro and fund management; founded Consus Slate to pursue disciplined, uncorrelated returns through forensic research and quiet conviction.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">AV</div></div>
+        <div style="font-weight:600;margin-top:10px">Ariadne Vale, Chief Investment Officer</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Oversees multi-strategy portfolio construction across L/S equity, event-driven, and macro. Background in applied mathematics and risk modeling.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">CM</div></div>
+        <div style="font-weight:600;margin-top:10px">Cassian Moore, Head of Research</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Directs global research with deep fundamental and catalyst-driven work. Previously led analyst teams at major hedge funds.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">ER</div></div>
+        <div style="font-weight:600;margin-top:10px">E. Rowan, Risk &amp; Operations</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Runs independent risk and operations, ensuring institutional-grade controls and data integrity.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">DL</div></div>
+        <div style="font-weight:600;margin-top:10px">D. Laurent, Compliance &amp; Legal</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Leads compliance and governance. Formerly at a New York law firm focused on financial regulation.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="init">JO</div></div>
+        <div style="font-weight:600;margin-top:10px">J. Ortega, Investor Relations</div>
+        <p class="muted" style="margin-top:6px;font-size:14px">Manages LP communications, onboarding, and reporting with a focus on clarity and responsiveness.</p>
+        <a class="btn" href="#" style="margin-top:10px">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:70px 24px;display:grid;gap:24px;grid-template-columns:1fr 1.5fr">
+    <div>
+      <h2 style="font-family:ui-serif,Georgia,serif;font-size:34px;margin:0">Investor Relations</h2>
+      <p class="muted" style="margin-top:8px;max-width:620px">Qualified investors may request materials or schedule a conversation with our investor relations team.</p>
+      <div style="margin-top:18px;display:grid;gap:10px">
+        <div class="subtle">✉ ir@consusslate.com</div>
+        <div class="subtle">☎ +1 (212) 555-0134</div>
+        <div class="subtle">📍 545 Madison Ave, New York, NY</div>
+      </div>
+      <div class="panel" style="padding:16px;margin-top:18px">
+        <div style="font-weight:600">Compliance</div>
+        <p class="muted" style="font-size:13px;margin-top:6px">For informational purposes only and not an offer to sell or solicitation to buy any securities. Any offer will be made only to qualified investors by confidential private placement memorandum.</p>
+      </div>
+    </div>
+    <form id="contactForm" class="panel" style="padding:16px">
+      <div style="display:grid;gap:12px">
+        <div>
+          <label for="name" class="subtle" style="font-size:13px">Name</label>
+          <input id="name" name="name" required placeholder="Your full name" style="width:100%;margin-top:6px;background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px">
+        </div>
+        <div>
+          <label for="email" class="subtle" style="font-size:13px">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@firm.com" style="width:100%;margin-top:6px;background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px">
+        </div>
+        <div class="grid grid-2">
+          <div>
+            <label for="org" class="subtle" style="font-size:13px">Organization</label>
+            <input id="org" name="organization" placeholder="Firm or family office" style="width:100%;margin-top:6px;background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px">
+          </div>
+          <div>
+            <label for="aum" class="subtle" style="font-size:13px">AUM Range</label>
+            <input id="aum" name="aum" placeholder="$50M–$5B (placeholder)" style="width:100%;margin-top:6px;background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px">
+          </div>
+        </div>
+        <div>
+          <label for="msg" class="subtle" style="font-size:13px">Message</label>
+          <textarea id="msg" name="message" placeholder="Tell us a bit about your mandate" style="width:100%;margin-top:6px;background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;min-height:140px"></textarea>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#9ca3af">
+          <input type="checkbox" id="qual" style="accent-color:#e5e7eb"> I confirm I am a qualified investor (design placeholder).
+        </label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" type="submit">Submit</button>
+          <button class="btn" type="button" id="subscribeBtn">Subscribe to Updates</button>
+        </div>
+        <p class="muted" style="font-size:12px">By submitting you agree to our Terms &amp; Privacy Policy.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer style="border-top:1px solid var(--line)">
+  <div class="container" style="padding:38px 24px;display:grid;gap:18px;grid-template-columns:1fr 1fr">
+    <div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="height:28px;width:28px;border-radius:8px;background:linear-gradient(135deg,#fff,#9ca3af);color:#0a0b0d;font-weight:900;display:grid;place-items:center">CS</div>
+        <div style="font-family:ui-serif,Georgia,serif;font-size:18px">Consus Slate</div>
+      </div>
+      <p class="muted" style="margin-top:8px">An ominously calm presence in volatile markets.</p>
+    </div>
+    <div style="text-align:right">
+      <div class="muted">© <span id="year"></span> Consus Slate Capital Management LP.</div>
+      <div class="muted" style="margin-top:6px"><a href="#">Privacy</a> • <a href="#">Terms</a> • <a href="#">Regulatory</a></div>
+    </div>
+  </div>
+  <div class="footer-meta">
+    <div class="container" style="padding:18px 24px;display:grid;gap:16px;grid-template-columns:1fr auto 1fr;align-items:center">
+      <div class="muted" style="font-size:12px">This website contains placeholder content for design demonstration only.</div>
+      <form class="desktop" onsubmit="event.preventDefault();" style="display:flex;gap:8px">
+        <input placeholder="Email for updates (placeholder)" style="background:#0b0d11;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px">
+        <button class="btn primary" type="button">Join</button>
+      </form>
+      <div style="justify-self:end;display:flex;gap:10px">
+        <a href="#" class="btn">LinkedIn</a>
+        <a href="#" class="btn">Factsheet</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Cookie banner -->
+<div id="cookie" class="cookie shadow" role="dialog" aria-modal="true" aria-label="Cookie preferences" hidden>
+  <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <div class="muted">We use essential cookies for site functionality (design placeholder).</div>
+    <div style="display:flex;gap:8px">
+      <button id="cookieAccept" class="btn primary">Accept</button>
+      <button id="cookieClose" class="btn">Preferences</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Data (illustrative)
+  const perf = [
+    { m: "Jan", r: 0.4 }, { m: "Feb", r: 0.9 }, { m: "Mar", r: 1.6 }, { m: "Apr", r: 1.2 },
+    { m: "May", r: 2.1 }, { m: "Jun", r: 2.8 }, { m: "Jul", r: 3.5 }, { m: "Aug", r: 4.1 },
+    { m: "Sep", r: 3.9 }, { m: "Oct", r: 4.7 }, { m: "Nov", r: 5.6 }, { m: "Dec", r: 6.3 },
+  ];
+  const drawdown = [
+    { m: "Jan", d: 0 }, { m: "Feb", d: -0.2 }, { m: "Mar", d: -0.1 }, { m: "Apr", d: -0.6 },
+    { m: "May", d: -0.4 }, { m: "Jun", d: -0.5 }, { m: "Jul", d: -0.2 }, { m: "Aug", d: -0.3 },
+    { m: "Sep", d: -0.8 }, { m: "Oct", d: -0.3 }, { m: "Nov", d: -0.1 }, { m: "Dec", d: 0 },
+  ];
+
+  // Helpers for simple SVG charts
+  function drawLineChart(svgId, data, xPad=40, yPad=24, maxY=7, minY=0){
+    const svg = document.getElementById(svgId);
+    const w = svg.viewBox.baseVal.width, h = svg.viewBox.baseVal.height;
+    const plotW = w - xPad*2, plotH = h - yPad*2;
+    const gx = svg.querySelector('#lineAxis');
+    gx.innerHTML = '';
+    // axes grid lines
+    for(let i=0;i<=4;i++){
+      const y = yPad + (plotH/4)*i;
+      const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1', xPad); ln.setAttribute('x2', xPad+plotW);
+      ln.setAttribute('y1', y); ln.setAttribute('y2', y);
+      gx.appendChild(ln);
+    }
+    // path
+    const xStep = plotW/(data.length-1);
+    const path = [];
+    data.forEach((pt, i)=>{
+      const x = xPad + xStep*i;
+      const t = (pt.r - minY)/(maxY - minY);
+      const y = yPad + plotH*(1 - t);
+      path.push((i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1));
+    });
+    svg.querySelector('#linePath').setAttribute('d', path.join(' '));
+  }
+
+  function drawAreaChart(svgId, data, xPad=40, yPad=24, maxY=0, minY=-1){
+    const svg = document.getElementById(svgId);
+    const w = svg.viewBox.baseVal.width, h = svg.viewBox.baseVal.height;
+    const plotW = w - xPad*2, plotH = h - yPad*2;
+    const gx = svg.querySelector('#ddAxis');
+    gx.innerHTML='';
+    for(let i=0;i<=4;i++){
+      const y = yPad + (plotH/4)*i;
+      const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1', xPad); ln.setAttribute('x2', xPad+plotW);
+      ln.setAttribute('y1', y); ln.setAttribute('y2', y);
+      gx.appendChild(ln);
+    }
+    const xStep = plotW/(data.length-1);
+    const area = [];
+    data.forEach((pt, i)=>{
+      const x = xPad + xStep*i;
+      const t = (pt.d - minY)/(maxY - minY);
+      const y = yPad + plotH*(1 - t);
+      area.push((i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1));
+    });
+    // close to zero line at y for 0
+    const zeroT = (0 - minY)/(maxY - minY);
+    const zeroY = yPad + plotH*(1 - zeroT);
+    area.push('L '+(xPad+xStep*(data.length-1)).toFixed(1)+','+zeroY.toFixed(1));
+    area.push('L '+xPad.toFixed(1)+','+zeroY.toFixed(1)+' Z');
+    svg.querySelector('#ddArea').setAttribute('d', area.join(' '));
+  }
+
+  drawLineChart('lineChart', perf, 40, 24, 7, 0);
+  drawAreaChart('drawdownChart', drawdown, 40, 24, 0, -1);
+
+  // Year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Mobile menu logic
+  const openBtn = document.getElementById('openMenu');
+  const closeBtn = document.getElementById('closeMenu');
+  const wrap = document.getElementById('mobileWrap');
+  const backdrop = document.getElementById('menuBackdrop');
+  function openMenu(){ wrap.hidden = false; openBtn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden';}
+  function closeMenu(){ wrap.hidden = true; openBtn.setAttribute('aria-expanded','false'); document.body.style.overflow='';}
+  openBtn?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+  backdrop?.addEventListener('click', closeMenu);
+  document.querySelectorAll('.menuLink').forEach(a=>a.addEventListener('click', closeMenu));
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+
+  // Cookie banner
+  const cookie = document.getElementById('cookie');
+  const accept = document.getElementById('cookieAccept');
+  const closeC = document.getElementById('cookieClose');
+  try {
+    if (!localStorage.getItem('consus_cookies_ack')) cookie.hidden = false;
+  } catch {}
+  accept?.addEventListener('click', ()=>{ try{localStorage.setItem('consus_cookies_ack','1')}catch{} cookie.hidden=true; });
+  closeC?.addEventListener('click', ()=> cookie.hidden=true);
+
+  // Form validation (basic)
+  document.getElementById('contactForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if(!name || !email){ alert('Please fill in your name and email.'); return; }
+    alert('Thanks — this demo form is a placeholder only.');
+  });
+  document.getElementById('subscribeBtn').addEventListener('click', ()=>{
+    alert('Subscribed (placeholder).');
+  });
+</script>
+</body>
+</html>
